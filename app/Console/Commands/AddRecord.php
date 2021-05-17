@@ -40,7 +40,7 @@ class AddRecord extends Command
      */
     public function handle()
     {
-        $message = Message::query()->get();
+        $message = Message::query()->where("id", ">", 308)->get();
         $client = ClientBuilder::create()->build();
         foreach ($message as $item) {
             if(is_numeric($item["content"])) {
