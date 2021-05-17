@@ -12,7 +12,7 @@
 <body>
 <div id="container">
     <div id="hd" class="ue-clear">
-        <a href="{% url 'index' %}">
+        <a href="{{route("index")}}">
             <div class="logo"></div>
         </a>
         <div class="inputArea">
@@ -21,14 +21,14 @@
         </div>
     </div>
     <div class="nav">
-{{--        <ul class="searchList">--}}
-{{--            <li class="searchItem {% ifequal s_type " article--}}
-{{--            " %}current{% endifequal %}" data-type="article">伯乐文章</li>--}}
-{{--            <li class="searchItem {% ifequal s_type " question--}}
-{{--            " %}current{% endifequal %}" data-type="question">知乎问答</li>--}}
-{{--            <li class="searchItem {% ifequal s_type " job--}}
-{{--            " %}current{% endifequal %}" data-type="job">拉勾职位</li>--}}
-{{--        </ul>--}}
+        {{--        <ul class="searchList">--}}
+        {{--            <li class="searchItem {% ifequal s_type " article--}}
+        {{--            " %}current{% endifequal %}" data-type="article">伯乐文章</li>--}}
+        {{--            <li class="searchItem {% ifequal s_type " question--}}
+        {{--            " %}current{% endifequal %}" data-type="question">知乎问答</li>--}}
+        {{--            <li class="searchItem {% ifequal s_type " job--}}
+        {{--            " %}current{% endifequal %}" data-type="job">拉勾职位</li>--}}
+        {{--        </ul>--}}
     </div>
     <div id="bd" class="ue-clear">
         <div id="main">
@@ -72,33 +72,33 @@
                 <div class="resultList">
                     <div class="resultItem">
                         @foreach($hit_list as $hits)
-                        <div class="itemHead">
-                            <a href="{{ $hits['url'] }}" target="_blank" class="title">
-                                {!! $hits['title'] !!}
-                            </a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
+                            <div class="itemHead">
+                                <a href="{{ $hits['url'] }}" target="_blank" class="title">
+                                    {!! $hits['title'] !!}
+                                </a>
+                                <span class="divsion">-</span>
+                                <span class="fileType">
                                 <span class="label">来源：</span>
                                 <span class="value">来源</span>
                             </span>
-                            <span class="dependValue">
+                                <span class="dependValue">
                                 <span class="label">得分：</span>
                                 <span class="value">{{ $hits['score'] }}</span>
                             </span>
-                        </div>
-                        <div class="itemBody">{{ $hits['content'] }}</div>
-                        <div class="itemFoot">
+                            </div>
+                            <div class="itemBody">{{ $hits['content'] }}</div>
+                            <div class="itemFoot">
                             <span class="info">
                                 <label>网站：</label>
                                 <span class="value">网站</span>
                             </span>
-                            <span class="info">
+                                <span class="info">
                                 <label>发布时间：</label>
                                 <span class="value">
                                  {{ $hits['create_date'] }}
                                 </span>
                             </span>
-                        </div>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -110,9 +110,9 @@
                 <div class="hotSearch">
                     <h6>热门搜索</h6>
                     <ul class="historyList">
-{{--                        {% for search in topn_search %}--}}
-{{--                        <li><a href="/search?q={{ $search }}&s_type=article">{{ $search }}</a></li>--}}
-{{--                        {% endfor %}--}}
+                        {{--                        {% for search in topn_search %}--}}
+                        {{--                        <li><a href="/search?q={{ $search }}&s_type=article">{{ $search }}</a></li>--}}
+                        {{--                        {% endfor %}--}}
                     </ul>
                 </div>
                 <div class="mySearch">
@@ -131,7 +131,7 @@
 <script src="{{asset("js/global.js")}}"></script>
 <script src="{{asset("js/pagination.js")}}"></script>
 <script type="text/javascript">
-    var search_url = "{% url 'search' %}"
+    var search_url = "{{route("search")}}"
 
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
@@ -181,7 +181,7 @@
     var key_words = "{{ $key_words }}"
     //分页
     $(".pagination").pagination({{ $total }}, {
-{{--        current_page: {{ page|add:'-1' }}, //当前页码--}}
+        {{--        current_page: {{ page|add:'-1' }}, //当前页码--}}
         items_per_page: 10,
         display_msg: true,
         callback: pageselectCallback

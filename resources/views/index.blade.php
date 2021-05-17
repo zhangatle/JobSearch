@@ -18,9 +18,8 @@
             </h1>
             <div class="nav ue-clear">
                 <ul class="searchList">
-                    <li class="searchItem current" data-type="article">伯乐文章</li>
-                    <li class="searchItem" data-type="question">知乎问答</li>
-                    <li class="searchItem" data-type="job">拉勾职位</li>
+                    <li class="searchItem current" data-type="article">招人</li>
+                    <li class="searchItem" data-type="question">出人</li>
                 </ul>
             </div>
             <div class="inputArea">
