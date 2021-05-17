@@ -57,6 +57,7 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $page = $request->input("page", 1);
+        $keywords = $request->input("keywords", "中华");
         $client = ClientBuilder::create()->build();
         $params = [
             'index' => 'zhihu_question',
@@ -64,7 +65,7 @@ class SearchController extends Controller
             'body' => [
                 'query' => [
                     'multi_match' => [
-                        'query' => '中华',
+                        'query' => $keywords,
                         'fields' => [
                             'title', 'content', 'topics'
                         ]
@@ -110,8 +111,9 @@ class SearchController extends Controller
             "last_seconds" => 111,
             "topn_search" => [],
             "count" => 1,
+            "key_words" => $keywords
         ];
-        dd($res);
+        return view("result", $res);
     }
 
     /**
