@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>搜索结果</title>
+    <title>DATAAI-搜索结果</title>
     <link rel="stylesheet" href="{{asset("css/style.css")}}">
     <link rel="stylesheet" href="{{asset("css/result.css")}}">
 </head>
@@ -20,42 +20,15 @@
             <input type="button" class="searchButton" onclick="add_search()"/>
         </div>
     </div>
-    <div class="nav">
-        {{--        <ul class="searchList">--}}
-        {{--            <li class="searchItem {% ifequal s_type " article--}}
-        {{--            " %}current{% endifequal %}" data-type="article">伯乐文章</li>--}}
-        {{--            <li class="searchItem {% ifequal s_type " question--}}
-        {{--            " %}current{% endifequal %}" data-type="question">知乎问答</li>--}}
-        {{--            <li class="searchItem {% ifequal s_type " job--}}
-        {{--            " %}current{% endifequal %}" data-type="job">拉勾职位</li>--}}
-        {{--        </ul>--}}
-    </div>
     <div id="bd" class="ue-clear">
         <div id="main">
             <div class="sideBar">
 
-                <div class="subfield">数据来源: </br>
-                    实时已爬取数据统计
-                </div>
+                <div class="subfield">实时已爬取数据统计</div>
                 <ul class="subfieldContext">
                     <li>
-                        <span class="name">伯乐在线</span>
-                        <span class="unit">1</span>
+                        <span class="name">微信抓取</span>
                     </li>
-                    <li>
-                        <span class="name">知乎</span>
-                        <span class="unit">0</span>
-                    </li>
-                    <li>
-                        <span class="name">拉勾网</span>
-                        <span class="unit">{{$job_count}}</span>
-                    </li>
-                    <!--                     <li class="more">
-                                            <a href="javascript:;">
-                                                <span class="text">更多</span>
-                                                <i class="moreIcon"></i>
-                                            </a>
-                                        </li> -->
                 </ul>
 
 
@@ -67,30 +40,26 @@
                 <p class="resultTotal">
                     <span class="info">找到约&nbsp;<span class="totalResult">{{ $total }}</span>&nbsp;条结果(用时<span
                             class="time">{{ $last_seconds }}</span>秒)，共约<span
-                            class="totalPage">{{ $page }}</span>页</span>
+                            class="totalPage">{{ $page_nums }}</span>页</span>
                 </p>
                 <div class="resultList">
                     <div class="resultItem">
                         @foreach($hit_list as $hits)
                             <div class="itemHead">
-                                <a href="{{ $hits['url'] }}" target="_blank" class="title">
-                                    {!! $hits['title'] !!}
-                                </a>
-                                <span class="divsion">-</span>
                                 <span class="fileType">
                                 <span class="label">来源：</span>
-                                <span class="value">来源</span>
+                                <span class="value">{{$hits["send_sender"]}}</span>
                             </span>
                                 <span class="dependValue">
                                 <span class="label">得分：</span>
                                 <span class="value">{{ $hits['score'] }}</span>
                             </span>
                             </div>
-                            <div class="itemBody">{{ $hits['content'] }}</div>
+                            <div class="itemBody">{!! $hits['content'] !!}</div>
                             <div class="itemFoot">
                             <span class="info">
-                                <label>网站：</label>
-                                <span class="value">网站</span>
+                                <label>发送人ID：</label>
+                                <span class="value">{{$hits["send_wxid"]}}</span>
                             </span>
                                 <span class="info">
                                 <label>发布时间：</label>
@@ -181,7 +150,7 @@
     var key_words = "{{ $key_words }}"
     //分页
     $(".pagination").pagination({{ $total }}, {
-        {{--        current_page: {{ page|add:'-1' }}, //当前页码--}}
+        current_page: {{ $page - 1}}, //当前页码
         items_per_page: 10,
         display_msg: true,
         callback: pageselectCallback

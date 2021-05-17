@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SearchController extends Controller
 {
@@ -20,7 +21,7 @@ class SearchController extends Controller
      * 获取搜索建议
      */
     public function suggest(Request $request) {
-        $keywords = $request->input("keywords", "");
+        $keywords = $request->input("s", "");
         $suggest_list = [];
         $client = ClientBuilder::create()->build();
         $params = [
@@ -29,13 +30,13 @@ class SearchController extends Controller
             "body" => [
                 "suggest" => [
                     "my-suggest" => [
-                        "text" => "古月",
+                        "text" => $keywords,
                         "completion" => [
                             "field" => "suggest",
                             "size" => 10,
-                            "fuzzy" => [
-                                "fuzziness"=> 20,
-                            ]
+//                            "fuzzy" => [
+//                                "fuzziness"=> 5,
+//                            ]
                         ]
                     ]
                 ]
@@ -45,7 +46,7 @@ class SearchController extends Controller
         $suggestions = $suggestions["suggest"]["my-suggest"][0]["options"];
         foreach ($suggestions as $item) {
             $source = $item["_source"];
-            array_push($suggest_list, $source["content"]);
+            array_push($suggest_list,Str::limit($source["content"], $limit = 80, $end = '...'));
         }
         return $suggest_list;
     }
