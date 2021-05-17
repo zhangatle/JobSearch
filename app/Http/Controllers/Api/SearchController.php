@@ -13,7 +13,41 @@ class SearchController extends Controller
      */
     public function index()
     {
+        return view("index");
+    }
 
+    /**
+     * 获取搜索建议
+     */
+    public function suggest(Request $request) {
+        $keywords = $request->input("keywords", "");
+        $suggest_list = [];
+        $client = ClientBuilder::create()->build();
+        $params = [
+            'index' => 'job_test',
+            'type' => '_doc',
+            "body" => [
+                "suggest" => [
+                    "my-suggest" => [
+                        "text" => "古月",
+                        "completion" => [
+                            "field" => "suggest",
+                            "size" => 10,
+                            "fuzzy" => [
+                                "fuzziness"=> 20,
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $suggestions = $client->search($params);
+        $suggestions = $suggestions["suggest"]["my-suggest"][0]["options"];
+        foreach ($suggestions as $item) {
+            $source = $item["_source"];
+            array_push($suggest_list, $source["content"]);
+        }
+        return $suggest_list;
     }
 
 
@@ -87,7 +121,8 @@ class SearchController extends Controller
         $client = ClientBuilder::create()->build();
         $title = $request->input("title","");
         $content = $request->input("content","");
-        $suggests = $this->gen_suggest(["我是中国人"=>10,"中华人民共和国"=>7]);
+        $content = "古月一一微羽', '嘉兴单位寻：二级房建 市政,挂资质，季度签，唯一无社保都要,单位确定，带价来[勾引][勾引][勾引]";
+        $suggests = $this->gen_suggest([$content=>10,"中华人民共和国"=>7]);
         $params = [
             "index" => "job_test",
             "type" => "_doc",
@@ -96,17 +131,18 @@ class SearchController extends Controller
                 "msg_type" => "group",
                 "send_wxid" => "小易",
                 "send_sender" => "小易",
-                "content" => "古月一一微羽', '嘉兴单位寻：二级房建 市政,挂资质，季度签，唯一无社保都要,单位确定，带价来[勾引][勾引][勾引]",
+                "content" => $content,
                 "add_time" => "1621102532",
                 "suggest" => $suggests,
             ]
         ];
+        var_dump($suggests);
         $response = $client->index($params);
         dd($response);
     }
 
     public function gen_suggest($params) {
-        $index = "zhihu_question";
+        $index = "job_test";
         $client = ClientBuilder::create()->build();
         $suggests = [];
         foreach ($params as $key => $value) {
