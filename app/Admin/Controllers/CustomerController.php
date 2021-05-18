@@ -3,10 +3,13 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Repositories\Customer;
+use App\Services\EsService;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use Dcat\Admin\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CustomerController extends AdminController
 {
@@ -24,7 +27,6 @@ class CustomerController extends AdminController
             $grid->column('api_key');
             $grid->column('created_at', '创建时间');
             $grid->column('updated_at', '更新时间')->sortable();
-
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
 
@@ -61,16 +63,16 @@ class CustomerController extends AdminController
         return Form::make(new Customer(), function (Form $form) {
             $form->display('id');
             $form->text('name');
-            $form->text('api_id');
-            $form->text('api_key');
-
+            if($form->isCreating()){
+                $form->text('api_id')->value(Str::random(32));
+                $form->text('api_key')->value(Str::random(32));
+            }
             $form->display('created_at');
             $form->display('updated_at');
+            $form->saved(function (Form $form) {
+                // 当表单保存时，创建elasticsearch索引
+                EsService::CreateEsIndex($form->api_key, $form->api_secret);
+            });
         });
-    }
-
-    public function list() {
-        $res = \App\Models\Customer::query()->select("id", "name")->get()->toArray();
-        return $res;
     }
 }
