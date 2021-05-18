@@ -40,7 +40,7 @@ class SearchController extends Controller
                 "key_words" => "",
             ]);
         }
-        Redis::zincrby("search_keywords_set", 1, Str::limit($keywords, 30,"..."));
+        Redis::zincrby("search_keywords_set", 1, Str::limit($keywords, 10,"..."));
         $top_search = Redis::zrevrangebyscore("search_keywords_set", "+inf", "-inf", ["limit"=>["offset"=>0, "count"=>5]]);
 
         $client = ClientBuilder::create()->build();
