@@ -56,34 +56,48 @@ class SearchController extends Controller
      */
     public function store(Request $request) {
         $client = ClientBuilder::create()->build();
-        $title = $request->input("title","");
         $content = $request->input("content","");
-        $content = "古月一一微羽', '嘉兴单位寻：二级房建 市政,挂资质，季度签，唯一无社保都要,单位确定，带价来[勾引][勾引][勾引]";
-        $suggests = $this->gen_suggest([$content=>10]);
+        $api_key = $request->input("api_key","");
+        $api_secret = $request->input("api_key","");
+        $wxid = $request->input("wxid","");
+        $msg_type = $request->input("msg_type","");
+        $send_wxid = $request->input("send_wxid","");
+        $send_sender = $request->input("send_sender","");
+        $add_time = $request->input("add_time",0);
+        $es_index = "dataai_es_index_".md5($api_key.$api_secret);
+
+        $suggests = $this->gen_suggest($es_index, [$content=>10]);
         $params = [
-            "index" => "job_test",
+            "index" => $es_index,
             "type" => "_doc",
             "body" => [
-                "wxid" => "ccd@qq.com",
-                "msg_type" => "group",
-                "send_wxid" => "小易",
-                "send_sender" => "小易",
+                "wxid" => $wxid,
+                "msg_type" => $msg_type,
+                "send_wxid" => $send_wxid,
+                "send_sender" => $send_sender,
                 "content" => $content,
-                "add_time" => "1621102532",
+                "add_time" => $add_time,
                 "suggest" => $suggests,
             ]
         ];
-        var_dump($suggests);
         $response = $client->index($params);
-        dd($response);
+        return [
+            "status" => 0,
+            "message" => "success"
+        ];
     }
 
-    public function gen_suggest($params) {
-        $index = "job_test";
+    /**
+     * 生成搜索建议
+     * @param $es_index
+     * @param $params
+     * @return array
+     */
+    public function gen_suggest($es_index , $params) {
         $client = ClientBuilder::create()->build();
         $suggests = [];
         foreach ($params as $key => $value) {
-            $words = $client->indices()->analyze(["index"=>$index, "body" => ["analyzer"=> "ik_max_word", "text"=>$key]]);
+            $words = $client->indices()->analyze(["index"=>$es_index, "body" => ["analyzer"=> "ik_max_word", "text"=>$key]]);
             $analyzed_words = [];
             foreach ($words["tokens"] as $word) {
                 array_push($analyzed_words, $word["token"]);
