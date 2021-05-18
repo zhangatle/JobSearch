@@ -25,7 +25,7 @@ class UserController extends AdminController
             $grid->column('name', '账号');
             $grid->column('password', '密码')->display(function ($value) {
                 try {
-                    return decrypt($value);
+                    return $value;
                 } catch (\Exception $exception) {
                     Log::info($exception->getMessage());
                     return '密码格式错误';
@@ -72,7 +72,7 @@ class UserController extends AdminController
             $form->text('name')->required();
             if($form->isCreating()){
                 $form->text('password')->saving(function ($value) {
-                    return Crypt::encrypt($value);
+                    return bcrypt($value);
                 })->required();
             }
             $form->select('customer_id', '企业名称')->options(function () {
