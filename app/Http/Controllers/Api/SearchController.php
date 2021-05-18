@@ -51,72 +51,6 @@ class SearchController extends Controller
         return $suggest_list;
     }
 
-
-    /**
-     * 获取搜索结果
-     */
-    public function search(Request $request)
-    {
-        $page = $request->input("page", 1);
-        $keywords = $request->input("keywords", "中华");
-        $client = ClientBuilder::create()->build();
-        $params = [
-            'index' => 'zhihu_question',
-            'type' => '_doc',
-            'body' => [
-                'query' => [
-                    'multi_match' => [
-                        'query' => $keywords,
-                        'fields' => [
-                            'title', 'content', 'topics'
-                        ]
-                    ]
-                ],
-                "from" => (1 - 1) * 10,
-                "size" => 10,
-                "highlight" => [
-                    "pre_tags" => ['<span class="keyword">'],
-                    "post_tags" => ['</span>'],
-                    "fields" => [
-                        "title" => (object)[],
-                        "job_desc" => (object)[],
-                        "company_name" => (object)[]
-                    ]
-                ]
-            ]
-        ];
-
-        $response = $client->search($params);
-        $hit_list = [];
-        foreach ($response['hits']['hits'] as $item) {
-            $source = $item["_source"];
-            $item_arr = ["url"=>$source["url"],"score"=>$item["_score"],"create_date"=>$source["crawl_time"]];
-            if(isset($item["highlight"]["title"])) {
-                $item_arr["title"] = "".join($item["highlight"]["title"]);
-            }else {
-                $item_arr["title"] = $source["title"];
-            }
-            if(isset($item["highlight"]["content"])) {
-                $item_arr["content"] = "".join($item["highlight"]["content"]);
-            }else {
-                $item_arr[ "content"]= $source["content"];
-            }
-            array_push($hit_list, $item_arr);
-        }
-        $total = $response["hits"]["total"]["value"];
-        $res = [
-            "page" => $page,
-            "hit_list" => $hit_list,
-            "total" => $total,
-            "now_page" => $page % 10 > 0 ? ($total / 10) + 1 : ($total / 10),
-            "last_seconds" => 111,
-            "topn_search" => [],
-            "count" => 1,
-            "key_words" => $keywords
-        ];
-        return view("result", $res);
-    }
-
     /**
      * 存储记录
      */
@@ -125,7 +59,7 @@ class SearchController extends Controller
         $title = $request->input("title","");
         $content = $request->input("content","");
         $content = "古月一一微羽', '嘉兴单位寻：二级房建 市政,挂资质，季度签，唯一无社保都要,单位确定，带价来[勾引][勾引][勾引]";
-        $suggests = $this->gen_suggest([$content=>10,"中华人民共和国"=>7]);
+        $suggests = $this->gen_suggest([$content=>10]);
         $params = [
             "index" => "job_test",
             "type" => "_doc",

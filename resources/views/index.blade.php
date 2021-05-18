@@ -31,12 +31,12 @@
             </div>
 
             <div class="historyArea">
-                {{--                <p class="history">--}}
-                {{--                    <label>热门搜索：</label>--}}
-                {{--                    {% for search_word in topn_search %}--}}
-                {{--                    <a href='/search?q={{ search_word }}&s_type=article'>{{ search_word }}</a>--}}
-                {{--                    {% endfor %}--}}
-                {{--                </p>--}}
+                <p class="history">
+                    <label>热门搜索：</label>
+                    @foreach($top_search as $search_word)
+                    <a href='/search?q={{ $search_word }}&s_type=article'>{{ $search_word }}</a>
+                    @endforeach
+                </p>
                 <p class="history mysearch">
                     <label>我的搜索：</label>
                     <span class="all-search"></span>

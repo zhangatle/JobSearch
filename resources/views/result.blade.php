@@ -74,9 +74,9 @@
                 <div class="hotSearch">
                     <h6>热门搜索</h6>
                     <ul class="historyList">
-                        {{--                        {% for search in topn_search %}--}}
-                        {{--                        <li><a href="/search?q={{ $search }}&s_type=article">{{ $search }}</a></li>--}}
-                        {{--                        {% endfor %}--}}
+                        @foreach($top_search as $key => $search)
+                            <li><a href="/search?q={{ $search }}&s_type=article">{{$key + 1}}:{{ $search }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
                 <div class="mySearch">
@@ -198,6 +198,9 @@
 
     function add_search() {
         let val = $(".searchInput").val();
+        if(val.length > 30) {
+            val = val.substring(0, 30)+"..."
+        }
         if (val.length >= 2) {
             //点击搜索按钮时，去重
             KillRepeat(val);
