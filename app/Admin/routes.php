@@ -12,7 +12,9 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    $router->get('/', 'HomeController@index');
+    $router->get('/', 'UserController@index');
     $router->resource('users', 'UserController');
     $router->resource('customer', 'CustomerController');
+
+    $router->get("/api/customer/list", 'CustomerController@list');
 });

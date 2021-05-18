@@ -3,10 +3,13 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Repositories\User;
+use App\Models\Customer;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
-use Dcat\Admin\Show;
 use Dcat\Admin\Http\Controllers\AdminController;
+use Dcat\Admin\Show;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends AdminController
 {
@@ -17,19 +20,23 @@ class UserController extends AdminController
      */
     protected function grid()
     {
-        return Grid::make(new User(), function (Grid $grid) {
+        return Grid::make(new User(['customer']), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $grid->column('email');
-            $grid->column('email_verified_at');
-            $grid->column('name');
-            $grid->column('password');
-            $grid->column('remember_token');
-            $grid->column('created_at');
-            $grid->column('updated_at')->sortable();
-        
+            $grid->column('name', '账号');
+            $grid->column('password', '密码')->display(function ($value) {
+                try {
+                    return decrypt($value);
+                } catch (\Exception $exception) {
+                    Log::info($exception->getMessage());
+                    return '密码格式错误';
+                }
+            });
+            $grid->column('customer.name', '企业名称');
+            $grid->column('created_at', '创建时间');
+            $grid->column('updated_at', '更新时间')->sortable();
             $grid->filter(function (Grid\Filter $filter) {
-                $filter->equal('id');
-        
+                $filter->equal('id', '用户ID');
+                $filter->equal('customer.name', '企业名称');
             });
         });
     }
@@ -43,13 +50,11 @@ class UserController extends AdminController
      */
     protected function detail($id)
     {
-        return Show::make($id, new User(), function (Show $show) {
+        return Show::make($id, new User(['customer']), function (Show $show) {
             $show->field('id');
-            $show->field('email');
-            $show->field('email_verified_at');
             $show->field('name');
-            $show->field('password');
-            $show->field('remember_token');
+            $show->field('customer_id');
+            $show->field('customer.name', '企业名称');
             $show->field('created_at');
             $show->field('updated_at');
         });
@@ -62,14 +67,22 @@ class UserController extends AdminController
      */
     protected function form()
     {
-        return Form::make(new User(), function (Form $form) {
+        return Form::make(new User('customer'), function (Form $form) {
             $form->display('id');
-            $form->text('email');
-            $form->text('email_verified_at');
-            $form->text('name');
-            $form->text('password');
-            $form->text('remember_token');
-        
+            $form->text('name')->required();
+            if($form->isCreating()){
+                $form->text('password')->saving(function ($value) {
+                    return Crypt::encrypt($value);
+                })->required();
+            }
+            $form->select('customer_id', '企业名称')->options(function () {
+                $list = [];
+                $customer = Customer::query()->select("id", "name")->get();
+                foreach ($customer as $item) {
+                    $list[$item->id] = $item->name;
+                }
+                return $list;
+            })->required();
             $form->display('created_at');
             $form->display('updated_at');
         });

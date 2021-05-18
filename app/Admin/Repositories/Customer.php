@@ -2,7 +2,6 @@
 
 namespace App\Admin\Repositories;
 
-use App\Models\Customer as Model;
 use Dcat\Admin\Repositories\EloquentRepository;
 
 class Customer extends EloquentRepository
@@ -12,5 +11,5 @@ class Customer extends EloquentRepository
      *
      * @var string
      */
-    protected $eloquentClass = Model::class;
+    protected $eloquentClass = \App\Models\Customer::class;
 }

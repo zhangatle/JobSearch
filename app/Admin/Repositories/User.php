@@ -12,5 +12,5 @@ class User extends EloquentRepository
      *
      * @var string
      */
-    protected $eloquentClass = Model::class;
+    protected $eloquentClass = \App\Models\User::class;
 }

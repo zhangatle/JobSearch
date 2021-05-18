@@ -19,15 +19,15 @@ class CustomerController extends AdminController
     {
         return Grid::make(new Customer(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $grid->column('name');
+            $grid->column('name', '企业名称');
             $grid->column('api_id');
             $grid->column('api_key');
-            $grid->column('created_at');
-            $grid->column('updated_at')->sortable();
-        
+            $grid->column('created_at', '创建时间');
+            $grid->column('updated_at', '更新时间')->sortable();
+
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
-        
+
             });
         });
     }
@@ -63,9 +63,14 @@ class CustomerController extends AdminController
             $form->text('name');
             $form->text('api_id');
             $form->text('api_key');
-        
+
             $form->display('created_at');
             $form->display('updated_at');
         });
+    }
+
+    public function list() {
+        $res = \App\Models\Customer::query()->select("id", "name")->get()->toArray();
+        return $res;
     }
 }
