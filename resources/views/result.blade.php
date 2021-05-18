@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>DATAAI-搜索结果</title>
+    <title>{{env("app_name")}}-搜索结果</title>
     <link rel="stylesheet" href="{{asset("css/style.css")}}">
     <link rel="stylesheet" href="{{asset("css/result.css")}}">
 </head>
@@ -23,24 +23,19 @@
     <div id="bd" class="ue-clear">
         <div id="main">
             <div class="sideBar">
-
                 <div class="subfield">实时已爬取数据统计</div>
                 <ul class="subfieldContext">
                     <li>
                         <span class="name">微信抓取</span>
                     </li>
                 </ul>
-
-
                 <div class="sideBarShowHide">
                     <a href="javascript:;" class="icon"></a>
                 </div>
             </div>
             <div class="resultArea">
                 <p class="resultTotal">
-                    <span class="info">找到约&nbsp;<span class="totalResult">{{ $total }}</span>&nbsp;条结果(用时<span
-                            class="time">{{ $last_seconds }}</span>秒)，共约<span
-                            class="totalPage">{{ $page_nums }}</span>页</span>
+                    <span class="info">找到约&nbsp;<span class="totalResult">{{ $total }}</span>&nbsp;条结果(用时<span class="time">{{ $last_seconds }}</span>秒)，共约<span class="totalPage">{{ $page_nums }}</span>页</span>
                 </p>
                 <div class="resultList">
                     <div class="resultItem">
@@ -87,21 +82,19 @@
                 <div class="mySearch">
                     <h6>我的搜索</h6>
                     <ul class="historyList">
-
                     </ul>
                 </div>
             </div>
         </div><!-- End of main -->
     </div><!--End of bd-->
 </div>
-<div id="foot">Copyright &copy;search.zhangatle.cn 版权所有 E-mail:search@zhangatle.cn</div>
+<div id="foot">Copyright &copy;{{env("APP_NAME")}} 版权所有 E-mail:search@dataai.cn</div>
 </body>
 <script src="{{asset("js/jquery.js")}}"></script>
 <script src="{{asset("js/global.js")}}"></script>
 <script src="{{asset("js/pagination.js")}}"></script>
 <script type="text/javascript">
-    var search_url = "{{route("search")}}"
-
+    let search_url = "{{route("search")}}"
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
         $(this).addClass('current');
@@ -112,8 +105,8 @@
     });
 
     function removeByValue(arr, val) {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] == val) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === val) {
                 arr.splice(i, 1);
                 break;
             }
@@ -121,9 +114,8 @@
     }
 
     $('.subfieldContext .more').click(function (e) {
-        var $more = $(this).parent('.subfieldContext').find('.more');
+        let $more = $(this).parent('.subfieldContext').find('.more');
         if ($more.hasClass('show')) {
-
             if ($(this).hasClass('define')) {
                 $(this).parent('.subfieldContext').find('.more').removeClass('show').find('.text').text('自定义');
             } else {
@@ -147,7 +139,7 @@
         }
 
     });
-    var key_words = "{{ $key_words }}"
+    let key_words = "{{ $key_words }}"
     //分页
     $(".pagination").pagination({{ $total }}, {
         current_page: {{ $page - 1}}, //当前页码
@@ -184,7 +176,7 @@
 
     // 联想下拉点击
     $('.dataList').on('click', 'li', function () {
-        var text = $(this).text();
+        let text = $(this).text();
         $('.searchInput').val(text);
         $('.dataList').hide()
     });
@@ -192,7 +184,7 @@
     hideElement($('.dataList'), $('.searchInput'));
 </script>
 <script>
-    var searchArr;
+    let searchArr;
     //定义一个search的，判断浏览器有无数据存储（搜索历史）
     if (localStorage.search) {
         //如果有，转换成 数组的形式存放到searchArr的数组里（localStorage以字符串的形式存储，所以要把它转换成数组的形式）
@@ -205,7 +197,7 @@
     MapSearchArr();
 
     function add_search() {
-        var val = $(".searchInput").val();
+        let val = $(".searchInput").val();
         if (val.length >= 2) {
             //点击搜索按钮时，去重
             KillRepeat(val);
@@ -220,14 +212,14 @@
     }
 
     function MapSearchArr() {
-        var tmpHtml = "";
-        var arrLen = 0
+        let tmpHtml = "";
+        let arrLen = 0
         if (searchArr.length > 6) {
             arrLen = 6
         } else {
             arrLen = searchArr.length
         }
-        for (var i = 0; i < arrLen; i++) {
+        for (let i = 0; i < arrLen; i++) {
             tmpHtml += '<li><a href="/search?q=' + searchArr[i] + '&s_type=' + $(".searchItem.current").attr('data-type') + '">' + searchArr[i] + '</a></li>'
         }
         $(".mySearch .historyList").append(tmpHtml);
@@ -235,8 +227,8 @@
 
     //去重
     function KillRepeat(val) {
-        var kill = 0;
-        for (var i = 0; i < searchArr.length; i++) {
+        let kill = 0;
+        for (let i = 0; i < searchArr.length; i++) {
             if (val === searchArr[i]) {
                 kill++;
             }
