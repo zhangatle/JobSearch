@@ -11,8 +11,9 @@
 |
 */
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-Auth::routes();
+Auth::routes(["register"=>false, "reset"=>false,"verify"=>false]);
 
 Route::middleware(['auth', "singlesso"])->group(function () {
     Route::get('/', "SearchController@index")->name("index");
