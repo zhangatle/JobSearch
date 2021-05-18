@@ -18,12 +18,12 @@
                     <div class="logo large"></div>
                 </a>
             </h1>
-            <div class="nav ue-clear">
-                <ul class="searchList">
-                    <li class="searchItem current" data-type="demand">招人</li>
-                    <li class="searchItem" data-type="supply">出人</li>
-                </ul>
-            </div>
+{{--            <div class="nav ue-clear">--}}
+{{--                <ul class="searchList">--}}
+{{--                    <li class="searchItem current" data-type="demand">招人</li>--}}
+{{--                    <li class="searchItem" data-type="supply">出人</li>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
             <div class="inputArea">
                 <input type="text" class="searchInput"/>
                 <input type="button" class="searchButton" onclick="add_search()"/>
