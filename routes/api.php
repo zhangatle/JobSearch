@@ -20,5 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // 获取搜索结果
 Route::get('/search', "Api\SearchController@search")->name("api.search");
-Route::post('/store', "Api\SearchController@store")->name("api.store");
+Route::post('/message', "Api\SearchController@message")->name("api.message");
+Route::post('/friend', "Api\SearchController@friend")->name("api.friend");
 Route::get('/suggest', "Api\SearchController@suggest")->name("api.suggest");

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FriendRequest;
 use App\Http\Requests\MessageRequest;
+use App\Models\Customer;
+use App\Models\Friend;
 use Carbon\Carbon;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class SearchController extends Controller
@@ -54,9 +58,47 @@ class SearchController extends Controller
     }
 
     /**
+     * 添加好友关系
+     */
+    public function friend(FriendRequest $request) {
+        $api_id = $request->input("api_id", "");
+        $api_key = $request->input("api_key", "");
+
+        if(!$customer = Customer::query()->where("api_id", $api_id)->where("api_key", $api_key)->first()){
+            return ["message" => "企业不存在"];
+        }
+
+        $content_json = $request->input("content_json", []);
+
+        $wxid = $content_json["wxid"];
+        $nickname = $content_json["nickname"];
+        $user_list = $content_json["user_list"];
+        foreach ($user_list as $user) {
+            $friend_id = $user["userid"];
+            $friend_remark = $user["remark"];
+            $friend_nickname = $user['nickname'];
+            $friend_number = $user["user_number"];
+            $friend = new Friend();
+            $friend->customer_id = $customer->id;
+            $friend->wxid = $wxid;
+            $friend->nickname = $nickname;
+            $friend->friend_id = $friend_id;
+            $friend->friend_remark = $friend_remark;
+            $friend->friend_nickname = $friend_nickname;
+            $friend->friend_number = $friend_number;
+            try {
+                $friend->saveOrFail();
+            }catch (\Exception $exception){
+                Log::info($exception);
+            }
+        }
+        return ["message"=> "success"];
+    }
+
+    /**
      * 存储记录
      */
-    public function store(MessageRequest $request) {
+    public function message(MessageRequest $request) {
         $client = ClientBuilder::create()->build();
 
         $api_id = $request->input("api_id","");
