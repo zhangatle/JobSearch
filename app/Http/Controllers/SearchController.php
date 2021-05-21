@@ -58,6 +58,9 @@ class SearchController extends Controller
             'index' => $es_index,
             'type' => '_doc',
             'body' => [
+//                'collapse' => [
+//                    "field" => "message_content"
+//                ],
                 'query' => [
                     'multi_match' => [
                         'query' => $keywords,
@@ -68,6 +71,14 @@ class SearchController extends Controller
                 ],
                 "from" => ($page - 1) * 10,
                 "size" => 10,
+                "sort" => [
+                    "_score"=> [
+                        "order" => "desc"
+                    ],
+                    "add_time"=> [
+                        "order" => "desc"
+                    ]
+                ],
                 "highlight" => [
                     "pre_tags" => ['<span class="keyword">'],
                     "post_tags" => ['</span>'],
