@@ -58,9 +58,6 @@ class SearchController extends Controller
             'index' => $es_index,
             'type' => '_doc',
             'body' => [
-//                'collapse' => [
-//                    "field" => "message_content"
-//                ],
                 'query' => [
                     'multi_match' => [
                         'query' => $keywords,
@@ -82,6 +79,7 @@ class SearchController extends Controller
                 "highlight" => [
                     "pre_tags" => ['<span class="keyword">'],
                     "post_tags" => ['</span>'],
+                    "number_of_fragments" => 0,
                     "fields" => [
                         "message_content" => (object)[],
                     ]
@@ -92,11 +90,18 @@ class SearchController extends Controller
         $response = $client->search($params);
         $last_time = microtime(true) - $start;
         $hit_list = [];
+        $distinct_score = [];
         foreach ($response['hits']['hits'] as $item) {
             $source = $item["_source"];
-            // 此处应该借助redis提高效率
+            /** 此处应该借助redis提高效率 */
             $group = Friend::query()->where(["wxid" => $source["wxid"], "nickname" => $source["nickname"], "customer_id" => $customer_id, "friend_id" => $source["message_wxid"]])->firstOrFail();
 
+            /** 有个去重的需要，es本身比较难实现，这里巧妙利用打分机制，打分完成相同的，就只取最新的一条 */
+            if(in_array($item["_score"], $distinct_score)){
+                continue;
+            }else{
+                array_push($distinct_score, $item["_score"]);
+            }
             $group_name = $group ? $group->friend_nickname : "未知";
             $item_arr = [
                 "nickname" => $source["nickname"] ?? "未知",
