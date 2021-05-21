@@ -33,19 +33,22 @@ class EsService
                                 "type" => "completion",
                                 "analyzer"=> "ik_max_word"
                             ],
+                            "nickname" => [
+                                "type" => "keyword"
+                            ],
                             "wxid" => [
                                 "type" => "keyword"
                             ],
-                            "msg_type" => [
+                            "message_msg_type" => [
                                 "type" => "keyword"
                             ],
-                            "send_wxid" => [
+                            "message_wxid" => [
                                 "type" => "keyword"
                             ],
-                            "send_sender" => [
+                            "message_sender" => [
                                 "type" => "keyword"
                             ],
-                            "content" => [
+                            "message_content" => [
                                 "type" => "text",
                                 "analyzer" => "ik_max_word"
                             ],

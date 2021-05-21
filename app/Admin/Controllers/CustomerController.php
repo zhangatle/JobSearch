@@ -71,7 +71,8 @@ class CustomerController extends AdminController
             $form->display('updated_at');
             $form->saved(function (Form $form) {
                 // 当表单保存时，创建elasticsearch索引
-                EsService::CreateEsIndex($form->api_key, $form->api_secret);
+                Log::info($form->api_id. "===>". $form->api_key);
+                EsService::CreateEsIndex($form->api_id, $form->api_key);
             });
         });
     }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MessageRequest;
+use Carbon\Carbon;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -54,29 +56,40 @@ class SearchController extends Controller
     /**
      * 存储记录
      */
-    public function store(Request $request) {
+    public function store(MessageRequest $request) {
         $client = ClientBuilder::create()->build();
-        $content = $request->input("content","");
-        $api_key = $request->input("api_key","");
-        $api_secret = $request->input("api_key","");
-        $wxid = $request->input("wxid","");
-        $msg_type = $request->input("msg_type","");
-        $send_wxid = $request->input("send_wxid","");
-        $send_sender = $request->input("send_sender","");
-        $add_time = $request->input("add_time",0);
-        $es_index = "dataai_es_index_".md5($api_key.$api_secret);
 
-        $suggests = $this->gen_suggest($es_index, [$content=>10]);
+        $api_id = $request->input("api_id","");
+        $api_key = $request->input("api_key","");
+
+        $content_json = $request->input("content_json", []);
+
+        $nickname = $content_json["nickname"];
+        $wxid = $content_json["wxid"];
+        $message_msg_type = $content_json["message"]["msg_type"];
+        $message_wxid = $content_json["message"]["wxid"];
+        $message_sender = $content_json["message"]["sender"];
+        $message_content = $content_json["message"]["content"];
+
+
+        $es_index = "dataai_es_index_".md5($api_id.$api_key);
+        // 判断索引是否存在(如果不存在，则可以直接判定企业不存在)
+        if(!$client->indices()->exists(["index"=> $es_index])){
+            return ["message"=> "false"];
+        }
+
+        $suggests = $this->gen_suggest($es_index, [$message_content=>10]);
         $params = [
             "index" => $es_index,
             "type" => "_doc",
             "body" => [
+                "nickname" => $nickname,
                 "wxid" => $wxid,
-                "msg_type" => $msg_type,
-                "send_wxid" => $send_wxid,
-                "send_sender" => $send_sender,
-                "content" => $content,
-                "add_time" => $add_time,
+                "message_msg_type" => $message_msg_type,
+                "message_wxid" => $message_wxid,
+                "message_sender" => $message_sender,
+                "message_content" => $message_content,
+                "add_time" => Carbon::now()->timestamp,
                 "suggest" => $suggests,
             ]
         ];
