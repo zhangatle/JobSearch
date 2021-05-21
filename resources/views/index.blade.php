@@ -25,7 +25,7 @@
 {{--                </ul>--}}
 {{--            </div>--}}
             <div class="inputArea">
-                <input type="text" class="searchInput"/>
+                <input type="text" placeholder="请输入关键词进行搜索" class="searchInput"/>
                 <input type="button" class="searchButton" onclick="add_search()"/>
                 <ul class="dataList"></ul>
             </div>

@@ -16,7 +16,7 @@
             <div class="logo"></div>
         </a>
         <div class="inputArea">
-            <input type="text" class="searchInput" value="{{$key_words}}"/>
+            <input type="text" class="searchInput" placeholder="请输入关键词进行搜索" value="{{$key_words}}"/>
             <input type="button" class="searchButton" onclick="add_search()"/>
         </div>
     </div>
