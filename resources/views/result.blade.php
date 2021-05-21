@@ -43,7 +43,7 @@
                             <div class="itemHead">
                                 <span class="fileType">
                                 <span class="label">来源：</span>
-                                <span class="value">{{$hits["send_sender"]}}</span>
+                                <span class="value">{{$hits["nickname"]}}({{$hits["wxid"]}})</span>
                             </span>
                                 <span class="dependValue">
                                 <span class="label">得分：</span>
@@ -53,14 +53,18 @@
                             <div class="itemBody">{!! $hits['content'] !!}</div>
                             <div class="itemFoot">
                             <span class="info">
-                                <label>发送人ID：</label>
-                                <span class="value">{{$hits["send_wxid"]}}</span>
+                                <label>发送人：</label>
+                                <span class="value">{{$hits["message_sender"]}}</span>
                             </span>
                                 <span class="info">
-                                <label>发布时间：</label>
-                                <span class="value">
-                                 {{ $hits['create_date'] }}
-                                </span>
+                                <label>群昵称：</label>
+                                <span class="value">{{$hits["message_group"]}}</span>
+                            </span>
+                            <span class="info">
+                            <label>发布时间：</label>
+                            <span class="value">
+                             {{ $hits['create_date'] }}
+                            </span>
                             </span>
                             </div>
                         @endforeach
